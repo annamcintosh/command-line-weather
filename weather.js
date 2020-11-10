@@ -1,8 +1,7 @@
-// api key = 0d75b4a04f22aa793d8507e33974e66f
 // api.openweathermap.org/data/2.5/weather?zip={zip code},us&appid=0d75b4a04f22aa793d8507e33974e66f
 //response.name
 //response.main.temp
-
+const api = require('./api.json')
 const https = require('https');
 const http = require('http');
 
@@ -12,28 +11,24 @@ function printError(error) {
 }
 
 //function to print message to console
-function printMessage(zipcode, temperature, name) {
-    const message = `It is ${temperature} degrees in ${zipcode} (${name}).`;
+function printWeather(zipcode, temperature, name) {
+    const message = `It is ${temperature} degrees fahrenheit in ${zipcode} (${name}).`;
     console.log(message);
 }
 
 function get(zipcode) {
     try {
-        // Connect to the API url ()
-        const request = https.get(`api.openweathermap.org/data/2.5/weather?zip=${zipcode},us&units=imperial&appid=0d75b4a04f22aa793d8507e33974e66f`, response => {
+        const request = https.get(`https://api.openweathermap.org/data/2.5/weather?zip=${zipcode},us&units=imperial&appid=${api.key}`, response => {
             if (response.statusCode === 200) {
             let body = ""
-            // Read the data
             response.on('data', data => {
-                body += data.toString();
+                body += data;
             });
 
             response.on('end', () => {
                 try {
-                    // Parse the data   
-                    const profile = JSON.parse(body); 
-                    // Print the data  
-                    printMessage();
+                    const weather = JSON.parse(body); 
+                    printWeather(zipcode, weather.main.temp, weather.name);
                 } catch (error) {
                     printError(error);
                 }
